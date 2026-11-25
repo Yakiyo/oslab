@@ -44,7 +44,7 @@ unsigned int palloc()
             unsigned int i = next;
             next++;
 
-            if (next >= limit) {
+            if (next >= range) {
                 next = VM_USERLO_PI;
             }
 
