@@ -38,7 +38,7 @@ unsigned int IDPTbl[1024][1024] gcc_aligned(PAGESIZE);
 // Sets the CR3 register with the start address of the page structure for process # [index].
 void set_pdir_base(unsigned int index)
 {
-    // TODO [Lab 2]
+    set_cr3(PDirPool[index]);
 }
 
 // Returns the page directory entry # [pde_index] of the process # [proc_index].
@@ -46,7 +46,7 @@ void set_pdir_base(unsigned int index)
 unsigned int get_pdir_entry(unsigned int proc_index, unsigned int pde_index)
 {
     // TODO [Lab 2]
-    return 0;
+    return (unsigned int) PDirPool[proc_index][pde_index];
 }
 
 // Sets the specified page directory entry with the start address of physical
@@ -56,6 +56,7 @@ void set_pdir_entry(unsigned int proc_index, unsigned int pde_index,
                     unsigned int page_index)
 {
     // TODO [Lab 2]
+    PDirPool[proc_index][pde_index] = (unsigned int *)((page_index << 12) | PT_PERM_PTU);
 }
 
 // Sets the page directory entry # [pde_index] for the process # [proc_index]
@@ -65,6 +66,7 @@ void set_pdir_entry(unsigned int proc_index, unsigned int pde_index,
 void set_pdir_entry_identity(unsigned int proc_index, unsigned int pde_index)
 {
     // TODO [Lab 2]
+    PDirPool[proc_index][pde_index] = (unsigned int *)((unsigned int)IDPTbl[pde_index] | PT_PERM_PTU);
 }
 
 // Removes the specified page directory entry (sets the page directory entry to 0).
@@ -72,6 +74,7 @@ void set_pdir_entry_identity(unsigned int proc_index, unsigned int pde_index)
 void rmv_pdir_entry(unsigned int proc_index, unsigned int pde_index)
 {
     // TODO [Lab 2]
+    PDirPool[proc_index][pde_index] = (unsigned int *)0;
 }
 
 // Returns the specified page table entry.
@@ -80,7 +83,11 @@ unsigned int get_ptbl_entry(unsigned int proc_index, unsigned int pde_index,
                             unsigned int pte_index)
 {
     // TODO [Lab 2]
-    return 0;
+    unsigned int entry = (unsigned int) PDirPool[proc_index][pde_index];
+
+    // last 12 bits & with 0 to mask out
+    unsigned int *table = (unsigned int *)(entry & 0xFFFFF000);  // Mask out the permission bits to get the table address
+    return table[pte_index];
 }
 
 // Sets the specified page table entry with the start address of physical page # [page_index]
@@ -90,6 +97,11 @@ void set_ptbl_entry(unsigned int proc_index, unsigned int pde_index,
                     unsigned int perm)
 {
     // TODO [Lab 2]
+    unsigned int entry = (unsigned int) PDirPool[proc_index][pde_index];
+
+    unsigned int *table = (unsigned int *)(entry & 0xFFFFF000);
+
+    table[pte_index] = (page_index << 12) | perm;
 }
 
 // Sets up the specified page table entry in IDPTbl as the identity map.
@@ -98,6 +110,7 @@ void set_ptbl_entry_identity(unsigned int pde_index, unsigned int pte_index,
                              unsigned int perm)
 {
     // TODO [Lab 2]
+    IDPTbl[pde_index][pte_index] = (pde_index << 22) | (pte_index << 12) | perm;
 }
 
 // Sets the specified page table entry to 0.
@@ -105,4 +118,8 @@ void rmv_ptbl_entry(unsigned int proc_index, unsigned int pde_index,
                     unsigned int pte_index)
 {
     // TODO [Lab 2]
+    unsigned int entry = (unsigned int) PDirPool[proc_index][pde_index];
+
+    unsigned int *table = (unsigned int *)(entry & 0xFFFFF000);
+    table[pte_index] = 0;
 }
