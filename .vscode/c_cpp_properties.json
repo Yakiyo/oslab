@@ -1,0 +1,33 @@
+{
+    "env": {
+        "projectRoot": "${workspaceFolder}/mcertikos",
+        "labDefines": ["LAB=1"]
+    },
+    "configurations": [
+        {
+            "name": "Kernel",
+            "compilerPath": "",
+            "intelliSenseMode": "linux-gcc-x86",
+            "cStandard": "gnu11",
+            "includePath": ["${projectRoot}/kern", "${projectRoot}"],
+            "defines": ["_KERN_", "SERIAL_DEBUG", "DEBUG_MSG", "${labDefines}"]
+        },
+        {
+            "name": "User programs",
+            "compilerPath": "",
+            "intelliSenseMode": "linux-gcc-x86",
+            "cStandard": "gnu11",
+            "includePath": ["${projectRoot}/user/include", "${projectRoot}/kern"],
+            "defines": ["_USER_", "${labDefines}"]
+        },
+        {
+            "name": "Bootloader",
+            "compilerPath": "",
+            "intelliSenseMode": "linux-gcc-x86",
+            "cStandard": "gnu11",
+            "includePath": ["${projectRoot}", "${projectRoot}/boot/boot1"],
+            "defines": ["BOOT_DEBUG", "BOOT_CONSOLE"]
+        }
+    ],
+    "version": 4
+}

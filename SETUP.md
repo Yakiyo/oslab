@@ -1,8 +1,8 @@
 # CSE 4502 OS Lab: setup on Windows 10 / 11 (WSL 2)
 
-On Windows you work inside **WSL 2**, which runs a real Ubuntu Linux system
-next to Windows. Do **not** unpack or build the project in Windows itself:
-unpack it inside Ubuntu, as described below.
+On Windows you build and run inside **WSL 2**, which runs a real Ubuntu Linux
+system next to Windows. You can edit the project in native Windows VS Code;
+for builds, keep the project inside Ubuntu, as described below.
 
 ## 1. Install WSL 2 with Ubuntu
 
@@ -77,6 +77,45 @@ nestedVirtualization=true
 
 Visual Studio Code with the **WSL** extension opens the Linux folder
 directly: in the Ubuntu terminal, run `code .` inside `mcertikos`.
+
+### Native Windows VS Code (editing only)
+
+You can also open either this repository folder or `mcertikos` directly in
+Windows VS Code. Install Microsoft's **C/C++** extension when prompted by
+the workspace recommendations. No Windows compiler or SDK is required for
+this editor setup; building, running and debugging still use WSL.
+
+The checked-in `.vscode/c_cpp_properties.json` files use Linux x86 GCC
+IntelliSense, GNU C and the project's own headers. The empty `compilerPath`
+deliberately skips compiler discovery, so a Windows compiler cannot supply
+incompatible system headers. See the [C/C++ settings reference](https://code.visualstudio.com/docs/cpp/customize-cpp-settings).
+
+Use **C/C++: Select a Configuration** in the Command Palette, or click the
+configuration name in the status bar:
+
+| Configuration | Files being edited |
+| --- | --- |
+| Kernel (default) | `kern/` |
+| User programs | `user/` |
+| Bootloader | `boot/` |
+
+Switch profiles when moving between these directories: kernel and user
+code require different headers and preprocessor definitions. Avoid combining
+their include paths, since they have headers with identical names.
+
+In the configuration file for the folder you opened, keep `env.labDefines`
+in sync with the `LAB` value you build with, for example `["LAB=2"]`. Add
+`"TEST"` to that list when editing kernel code enabled by `make TEST=1`.
+These editor settings do not change the Makefile or select the lab for builds.
+The configurations are shared by Windows and WSL editor sessions.
+
+Automatic CMake/Makefile configuration on opening or editing is disabled
+in the workspace settings to avoid invoking Linux build tools on Windows.
+Actual source errors remain visible; this setup does not disable diagnostics.
+If stale include errors remain after switching profiles, run
+**C/C++: Reset IntelliSense Database**, then **Developer: Reload Window**.
+Compiler diagnostics from a WSL build remain the final check, especially
+for inline assembly.
 
 ## Contents
 

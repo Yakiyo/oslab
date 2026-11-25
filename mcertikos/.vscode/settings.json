@@ -1,0 +1,5 @@
+{
+    "cmake.configureOnOpen": false,
+    "makefile.configureOnOpen": false,
+    "makefile.configureOnEdit": false
+}
